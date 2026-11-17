@@ -1,0 +1,7 @@
+{
+  "name": "claude-toolkit",
+  "owner": { "name": "Itay" },
+  "plugins": [
+    { "name": "claude-toolkit", "source": "./", "description": "Itay's personal working method, in every project." }
+  ]
+}
