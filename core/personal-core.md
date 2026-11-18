@@ -26,7 +26,7 @@ A project's own CLAUDE.md lists its standing exceptions (for example auto-publis
 - Anything that changes code or tools: work on a branch, open a PR, get an independent review (the reviewer agent) and QA by an agent that did not write it.
 - Anything small and reversible: just do it and say what you did.
 - Replace, don't accumulate. Remove what the change makes obsolete.
-- Stage only your own files, never `git add -A`. Commit only when asked. Flag any new dependency with its reason.
+- Stage only your own files by name, never `git add -A` (nothing enforces this, so it is a written rule). Never push to main or force-push: main changes only by merging a pull request, and GitHub branch protection backs this up. Commit only when asked. Flag any new dependency with its reason.
 - Any "from now on" instruction is saved to memory in the same turn.
 - When a QA check fails or he corrects something, ask which rule let it through, and propose the fix.
 - Keep it cheap: no extra agents unless the work is wide and independent. Multi-agent runs cost many times a normal chat.
