@@ -136,7 +136,7 @@ LEGACY = [
 
 def main():
     d = json.load(sys.stdin)
-    cmd = d.get("tool_input", {}).get("command", "")
+    cmd = (d.get("tool_input") or {}).get("command") or ""
     try:
         why = check_string(cmd)
     except Exception:  # never let a parsing bug open the gate: fall back to the plain patterns
