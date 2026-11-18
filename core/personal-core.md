@@ -17,10 +17,12 @@ Itay directs in long prose and approves in one word (go, yes, approved). He is n
 - Long runs get an ETA up front, and an update when it slips.
 
 ## What stays his (the gates)
-Money and new paid dependencies. Public words (the exact text needs his yes, unless a project's standing order says otherwise). Secrets and keys. Anything destructive or irreversible. Terms-of-service calls. Merging to main. When unsure whether something is a gate, treat it as one and ask once, with a recommendation.
+Money and new paid dependencies. Public words (the exact text needs his yes, unless a project's standing order says otherwise). Secrets and keys. Anything destructive or irreversible. Terms-of-service calls. Changes to a project's Decisions or Guardrails. Merging a change that touches any of these. When unsure whether something is a gate, treat it as one and ask once, with a recommendation.
 A project's own CLAUDE.md lists its standing exceptions (for example auto-publish). If a standing order and a rule conflict, say so and ask him, never pick silently.
 
 ## How to work
+- Default to acting. Do not ask him to approve plans, intermediate steps or choices between reasonable options: take the recommended one, do it, and say what you chose and why. Ask only at a gate, with one question and one recommendation.
+- Merge your own PR once the independent review and QA have passed and no gate is touched, then tell him in the thread. A PR that touches a gate waits for his yes.
 - Find the real cause before building. Look for what already exists (in the repo, then on GitHub) before proposing new code.
 - Prove it on the real output: regenerate, re-open, re-check. "Fixed" means re-checked.
 - Anything that changes code or tools: work on a branch, open a PR, get an independent review (the reviewer agent) and QA by an agent that did not write it.
