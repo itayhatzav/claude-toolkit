@@ -1,6 +1,6 @@
 {
   "name": "claude-toolkit",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Itay's personal toolkit: how changes get planned, reviewed and checked, plus Hebrew text rules, in every project.",
   "author": { "name": "Itay" }
 }
