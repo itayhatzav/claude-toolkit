@@ -1,6 +1,6 @@
 ---
 name: follow-run
-description: Watch a long job (build, batch, render, deploy, background agent) and report unasked: ETA, progress, live output checks, stall alarm, end report. Use for "follow the run", "tell me when it's done", or any job over a few minutes.
+description: "Watch a long job (build, batch, render, deploy, background agent) and report unasked: ETA, progress, live output checks, stall alarm, end report. Use for \"follow the run\", \"tell me when it's done\", or any job over a few minutes."
 argument-hint: "[log path, job id or what to follow]"
 ---
 The system reports; Itay never has to ask "what now?".

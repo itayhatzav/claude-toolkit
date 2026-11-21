@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Evidence research for a business, market, tool or options question with no code surface: primary sources dated, options scored. Returns its report in its output; never edits or writes files.
+description: "Evidence research for a business, market, tool or options question with no code surface: primary sources dated, options scored. Returns its report in its output; never edits or writes files."
 model: sonnet
 effort: high
 tools: Bash, Glob, Grep, Read, WebFetch, WebSearch
