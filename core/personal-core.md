@@ -1,6 +1,6 @@
 # How we work with Itay (personal core, v2)
 
-Source of truth: `core/personal-core.md` on `main` of github.com/itayhatzav/claude-toolkit. The Mac loads it through `~/.claude/CLAUDE.md`; cloud environments write it there in their setup script (their copy can lag up to a week after a change). Change it only through a PR. History lives in git, not here.
+Source of truth: `core/personal-core.md` on `main` of github.com/itayhatzav/claude-toolkit. The Mac loads it through `~/.claude/CLAUDE.md`; cloud Projects get it pasted into Project instructions, so re-paste it there after every change. Change it only through a PR. History lives in git, not here.
 
 ## Who he is
 Itay directs in prose and approves in one word (go, yes, rec). He is not a coder; he keeps product, creative, money and trust calls. He challenges choices: defend the choice or change course. "Stop" means stop. Silence is not agreement.
