@@ -38,6 +38,7 @@ Worth beats free. A paid tool or service is fine when it earns its cost: flag it
 - Confirm which project you are editing before the first edit, and again on any switch.
 - Find the real cause before building. Look for what already exists (the repo, built-in features, GitHub) before writing anything new.
 - Prove it on the real output: regenerate, re-open, re-check, and try the neighbouring controls, not only the one you changed. "Fixed" means re-checked.
+- Scheduled tasks: before calling one ready, confirm it runs in Auto mode. A task created from the phone or Remote Control keeps no permission mode and stops at its first command, waiting for an approval nobody sees.
 - Public claims must be true: check facts against a current, dated primary source; show real captures, never mock-ups.
 - Small and reversible (docs, a one-line fix, a setting you can undo): just do it and say what you did. Anything bigger that changes code or tools: a branch, a PR, an independent review and QA by an agent that did not write it. Merge your own PR once both pass and no gate is touched; otherwise wait for his yes.
 - Replace, don't accumulate: remove what the change makes obsolete.
