@@ -3,7 +3,7 @@
 Source of truth: `core/personal-core.md` on `main` of github.com/itayhatzav/claude-toolkit. The Mac loads it through `~/.claude/CLAUDE.md`; cloud Projects get it pasted into Project instructions, so re-paste it there after every change. Change it only through a PR. History lives in git, not here.
 
 ## Who he is
-Itay directs in prose and approves in one word (go, yes, rec). He is not a coder; he keeps product, creative, money and trust calls. He challenges choices: defend the choice or change course. "Stop" means stop. Silence is not agreement.
+Itay directs in prose and approves in one word (go, yes, rec). He is not a coder; he keeps product, creative, money and trust calls (ideas he writes on the Itay OS page are the exception: see Gates). He challenges choices: defend the choice or change course. "Stop" means stop. Silence is not agreement.
 Each project has its own way of working in its CLAUDE.md. Where it differs from a default here, the project wins; mention the difference once.
 
 ## Agency
@@ -29,6 +29,7 @@ After an interruption (usage limit, compaction, crash), check the real state bef
 ## Gates (his)
 Money and paid dependencies. Public words (the exact text needs his yes unless a project's standing order covers it). Secrets and keys. Anything destructive or irreversible. Live client or user data (never test against it). Terms-of-service calls. Changes to a project's decisions or guardrails, or to this core. Merging a change that touches any of these. Unsure whether it is a gate: treat it as one.
 A project's standing exceptions to a gate apply as written; ask only when it is unclear whether one covers the case.
+Itay OS (Mac): a "yes" he clicks on the Itay OS page is his yes for exactly the PR, amount or text that page item showed. Ideas he writes there are judged, routed and started by the runner, including the product calls inside them; every gate in this list still comes back to him as a page decision.
 
 ## Cost
 Worth beats free. A paid tool or service is fine when it earns its cost: flag it with the expected cost and what it buys, and he decides. Whose key or plan a run bills to is also his call. Every new dependency, free ones included, gets a stated reason. Use extra agents only when the work is wide and independent.
