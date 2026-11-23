@@ -1,0 +1,233 @@
+<title>Itay OS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Itay OS v10: one phone screen. Drop an idea, see what waits for you, what is being worked on, and where each idea stands.
+   Data: db `inbox/*` (ideas; the page writes status "new"), db `status/now` (snapshot written by the cloud routine "Itay OS sync"). */
+:root{
+  --bg:#f2f4f3; --surface:#ffffff; --sunk:#e7ebe9; --line:#d5dcd9; --fg:#14211d; --muted:#55645f; --faint:#6f7d78;
+  --accent:#0f6b5c; --accent-soft:#dcefe9; --accent-ink:#ffffff;
+  --gate:#9a5400; --gate-soft:#fbecd6; --ok:#1f7a3a; --ok-soft:#ddf1e2; --no:#a3322b; --no-soft:#f8e1de;
+  --f-display:"Rubik","Assistant",system-ui,sans-serif; --f-body:"Assistant","Segoe UI",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1513; --surface:#15201d; --sunk:#1c2925; --line:#2a3a35; --fg:#e4ece9; --muted:#9fb0aa; --faint:#86978f;
+  --accent:#4fc2ab; --accent-soft:#163a33; --accent-ink:#06120f;
+  --gate:#f0a54a; --gate-soft:#3a2a12; --ok:#6fd38c; --ok-soft:#173322; --no:#f08a80; --no-soft:#3a1c19; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1513; --surface:#15201d; --sunk:#1c2925; --line:#2a3a35; --fg:#e4ece9; --muted:#9fb0aa; --faint:#86978f;
+  --accent:#4fc2ab; --accent-soft:#163a33; --accent-ink:#06120f;
+  --gate:#f0a54a; --gate-soft:#3a2a12; --ok:#6fd38c; --ok-soft:#173322; --no:#f08a80; --no-soft:#3a1c19; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.page{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px calc(48px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{margin:0;font-family:var(--f-display);text-wrap:balance}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+a{color:var(--accent)}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:26px;font-weight:700;direction:ltr;margin-inline-end:auto}
+.mode{font-size:12.5px;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--sunk);color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.mode::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--faint)}
+.mode.live{background:var(--ok-soft);color:var(--ok)}.mode.live::before{background:var(--ok)}
+.mode.bad{background:var(--no-soft);color:var(--no)}.mode.bad::before{background:var(--no)}
+section{display:flex;flex-direction:column;gap:10px}
+section>h2{font-size:19px;font-weight:600;display:flex;align-items:center;gap:8px}
+.count{font-family:var(--f-body);font-size:13px;font-weight:700;min-width:22px;height:22px;border-radius:11px;padding:0 7px;display:inline-flex;align-items:center;justify-content:center;background:var(--sunk);color:var(--muted)}
+.count.hot{background:var(--gate);color:var(--surface)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.compose textarea{width:100%;min-height:96px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-size:16px;line-height:1.45;resize:vertical}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;min-height:40px;font-weight:600;font-size:14.5px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--fg)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 16px;min-height:44px;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;color:var(--fg)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{min-height:36px;padding:4px 12px;font-size:14px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hint{margin:0;color:var(--muted);font-size:14px}
+.list{display:flex;flex-direction:column;gap:8px}
+.it{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.it.wait{border-color:var(--gate);box-shadow:inset -3px 0 0 var(--gate)}
+.it p{margin:0;overflow-wrap:anywhere}
+.it .sub{color:var(--muted);font-size:14.5px;white-space:pre-wrap}
+.it .top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font-size:12.5px;font-weight:700;border-radius:999px;padding:1px 9px;background:var(--sunk);color:var(--muted)}
+.chip.g{background:var(--gate-soft);color:var(--gate)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.a{background:var(--accent-soft);color:var(--accent)}
+.chip.no{background:var(--no-soft);color:var(--no)}
+.none{color:var(--faint);font-size:14.5px;margin:0}
+.stages{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--faint);font-weight:600}
+.stages span.on{color:var(--accent)}
+.stages i{font-style:normal;opacity:.5}
+.projects{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.proj{display:flex;flex-direction:column;gap:8px}
+.proj h3{font-size:16px;font-weight:600}
+.warn{background:var(--gate-soft);color:var(--gate);border-radius:12px;padding:10px 14px;font-weight:600;font-size:14.5px}
+.foot{color:var(--faint);font-size:13px;margin:0}
+.toast{position:fixed;inset-inline:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));margin:0 auto;width:max-content;max-width:calc(100% - 32px);background:var(--fg);color:var(--bg);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14.5px;z-index:20}
+details summary{cursor:pointer;color:var(--faint);font-weight:600;font-size:14px;min-height:36px;display:flex;align-items:center}
+</style>
+
+<div class="page" dir="rtl" lang="he">
+  <header><h1>Itay OS</h1><span class="mode" id="mode">טוען</span></header>
+  <div id="banner"></div>
+
+  <section class="card compose" aria-labelledby="h-new">
+    <h2 id="h-new">רעיון או משימה חדשה</h2>
+    <textarea id="text" placeholder="מה בא לך שייעשה? כתוב חופשי, גם בקצרה." aria-label="הרעיון"></textarea>
+    <div class="seg" id="proj" role="group" aria-label="לאיזה פרויקט"></div>
+    <div class="row"><button class="btn primary" id="send" type="button">שליחה</button></div>
+    <p class="hint" id="sendhint"></p>
+  </section>
+
+  <section aria-labelledby="h-wait"><h2 id="h-wait">מחכה לך <span class="count" id="c-wait">0</span></h2><div class="list" id="wait"></div></section>
+  <section aria-labelledby="h-work"><h2 id="h-work">בעבודה עכשיו <span class="count" id="c-work">0</span></h2><div class="list" id="work"></div></section>
+  <section aria-labelledby="h-ideas"><h2 id="h-ideas">הרעיונות שלי</h2><div class="list" id="ideas"></div></section>
+  <section aria-labelledby="h-proj"><h2 id="h-proj">הפרויקטים</h2><div class="projects" id="projects"></div></section>
+  <p class="foot" id="foot"></p>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const PROJECTS=[
+  {slug:"e-commerce",name:"החנות",full:"החנות (Hatbox Mysteries)",url:"https://claude.ai/code/project/chan_015JaBjzbkvApYe2zWMTE117",board:"https://claude.ai/artifact/7iWv4LUWrusLTDTxDufiKy"},
+  {slug:"business-research",name:"מחקר עסקי",full:"מחקר עסקי (פתרונות לעסקים)",url:"https://claude.ai/code/project/chan_01QDKh7KFTV9GqEGRYA6xaZF"}];
+const SYNC_MIN=5, SYNC_FIRST=7, SYNC_LAST=23; // cloud routine "Itay OS sync": minute 5 of every hour 07-23 Israel time
+const STAGES=[["new","נשלח"],["routed","הגיע לפרויקט"],["working","בעבודה"],["waiting","מחכה לך"],["done","הושלם"]];
+const ST_CHIP={new:["ממתין לסנכרון","a"],routing:["בדרך לפרויקט","a"],routed:["הגיע לפרויקט","a"],working:["בעבודה","a"],waiting:["מחכה לך","g"],done:["הושלם","ok"],"needs-project":["צריך לבחור פרויקט","g"],error:["נתקע","no"]};
+const $=s=>document.querySelector(s);
+function el(t,a,...k){const e=document.createElement(t);if(a)for(const[n,v]of Object.entries(a)){if(v==null||v===false)continue;if(n==="class")e.className=v;else if(n==="text")e.textContent=v;else if(n.startsWith("on"))e.addEventListener(n.slice(2),v);else e.setAttribute(n,v===true?"":v)}for(const c of k.flat()){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}return e}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+const projOf=s=>PROJECTS.find(p=>p.slug===s);
+const safeUrl=u=>/^https:\/\/(claude\.ai|github\.com)\//.test(String(u||""))?u:null;
+function ago(iso){const t=new Date(iso).getTime();if(!t)return "";const m=Math.round((Date.now()-t)/6e4);if(m<1)return "עכשיו";if(m<60)return `לפני ${m} דקות`;const h=Math.round(m/60);if(h<24)return h===1?"לפני שעה":`לפני ${h} שעות`;const d=Math.round(h/24);return d===1?"אתמול":`לפני ${d} ימים`}
+function ilHour(){try{const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Jerusalem",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date());return {h:+p.find(x=>x.type==="hour").value,m:+p.find(x=>x.type==="minute").value}}catch(e){const d=new Date();return {h:d.getHours(),m:d.getMinutes()}}}
+function nextSync(){const {h,m}=ilHour();let nh=m<SYNC_MIN?h:h+1;if(nh<SYNC_FIRST)nh=SYNC_FIRST;if(nh>SYNC_LAST)return `מחר ב־0${SYNC_FIRST}:0${SYNC_MIN}`;return `${String(nh).padStart(2,"0")}:0${SYNC_MIN}`}
+const syncHours=()=>{const {h}=ilHour();return h>=SYNC_FIRST&&h<=SYNC_LAST};
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,4500)}
+
+const S={db:null,mode:"loading",inbox:[],status:null,proj:store("itayos.proj")||"auto",busy:false};
+
+function linkBtn(href,label){const u=safeUrl(href);return u?el("a",{class:"btn small",href:u,target:"_blank",rel:"noopener"},label):null}
+function projChip(slug){const p=projOf(slug);return p?el("span",{class:"chip"},p.name):null}
+
+function renderCompose(){
+  const seg=$("#proj");seg.replaceChildren(...[{slug:"auto",name:"תחליט אתה"},...PROJECTS].map(p=>el("button",{type:"button","aria-pressed":String(S.proj===p.slug),onclick:()=>{S.proj=p.slug;store("itayos.proj",p.slug);renderCompose()}},p.name)));
+  $("#send").disabled=S.busy||S.mode!=="live";
+  $("#sendhint").textContent=S.mode==="live"
+    ?`מגיע לפרויקט בבדיקה הקרובה (${nextSync()}), והעבודה מתחילה מיד אחר כך. דחוף? פתח את הפרויקט למטה וכתוב שם.`
+    :"אין חיבור לנתונים כרגע, אז אי אפשר לשלוח מכאן. אפשר לכתוב ישירות בפרויקט למטה.";
+}
+
+function ideaItems(){return S.inbox}
+function waitingItems(){
+  const out=[];
+  for(const x of S.inbox)if(x.status==="waiting")out.push({text:x.title||x.text,sub:x.ask||x.note,slug:x.project,link:x.issue_url,open:projOf(x.project)&&projOf(x.project).url});
+  for(const x of S.inbox)if(x.status==="needs-project")out.push({text:x.title||x.text,sub:"לאיזה פרויקט זה שייך? בחר למטה, ב״הרעיונות שלי״.",slug:null});
+  const seen=new Set(out.map(o=>o.link).filter(Boolean));
+  for(const p of (S.status&&S.status.projects)||[])for(const w of p.waiting||[])if(!(w.link&&seen.has(w.link)))out.push({text:w.text,sub:w.sub,slug:p.slug,link:w.link,open:projOf(p.slug)&&projOf(p.slug).url});
+  return out;
+}
+function workingItems(){
+  const out=[];
+  for(const x of S.inbox)if(x.status==="working"||x.status==="routed"||x.status==="routing")out.push({text:x.title||x.text,sub:x.note,slug:x.project,link:x.issue_url});
+  const seen=new Set(out.map(o=>o.link).filter(Boolean));
+  for(const p of (S.status&&S.status.projects)||[])for(const w of p.working||[])if(!(w.link&&seen.has(w.link)))out.push({text:w.text,sub:w.sub,slug:p.slug,link:w.link});
+  return out;
+}
+function itemEl(o,wait){
+  return el("div",{class:"it"+(wait?" wait":"")},
+    el("div",{class:"top"},projChip(o.slug)),
+    el("p",{},o.text||""),o.sub?el("p",{class:"sub"},o.sub):null,
+    (o.open||o.link)?el("div",{class:"row"},wait&&o.open?el("a",{class:"btn small primary",href:o.open,target:"_blank",rel:"noopener"},"לענות בפרויקט"):null,linkBtn(o.link,"פרטים")):null);
+}
+function renderLists(){
+  const w=waitingItems(),k=workingItems();
+  $("#c-wait").textContent=w.length;$("#c-wait").className="count"+(w.length?" hot":"");
+  $("#c-work").textContent=k.length;
+  $("#wait").replaceChildren(...(w.length?w.map(o=>itemEl(o,true)):[el("p",{class:"none"},S.status?"שום דבר לא מחכה לך כרגע.":"עוד אין תמונת מצב. היא מתעדכנת בבדיקה הקרובה.")]));
+  $("#work").replaceChildren(...(k.length?k.map(o=>itemEl(o,false)):[el("p",{class:"none"},"אין עבודה פעילה כרגע.")]));
+}
+function stagesEl(st){const i=STAGES.findIndex(s=>s[0]===(st==="routing"?"new":st));if(i<0)return null;return el("div",{class:"stages","aria-label":"שלב"},...STAGES.flatMap((s,j)=>[j?el("i",{},"‹"):null,el("span",{class:j<=i?"on":""},s[1])]))}
+function renderIdeas(){
+  const xs=ideaItems();
+  if(!xs.length){$("#ideas").replaceChildren(el("p",{class:"none"},"עוד לא שלחת רעיונות מכאן."));return}
+  $("#ideas").replaceChildren(...xs.map(x=>{
+    const c=ST_CHIP[x.status]||[x.status||"","a"];
+    const acts=[];
+    if(x.status==="needs-project")for(const p of PROJECTS)acts.push(el("button",{class:"btn small",type:"button",onclick:()=>setProject(x,p.slug)},`ל${p.name}`));
+    if(x.status==="new")acts.push(el("button",{class:"btn small",type:"button",onclick:()=>del(x)},"מחיקה"));
+    const open=projOf(x.project);
+    if(open&&x.status!=="new")acts.push(el("a",{class:"btn small",href:open.url,target:"_blank",rel:"noopener"},"לפרויקט"));
+    const gh=linkBtn(x.issue_url,"פרטים");if(gh)acts.push(gh);
+    return el("div",{class:"it"+(x.status==="waiting"||x.status==="needs-project"?" wait":"")},
+      el("div",{class:"top"},el("span",{class:"chip "+c[1]},c[0]),projChip(x.project),el("span",{class:"chip"},ago(x.updated_at||x.at))),
+      el("p",{},x.title||x.text||""),
+      x.title&&x.text&&x.title!==x.text?el("details",{},el("summary",{},"מה כתבתי"),el("p",{class:"sub"},x.text)):null,
+      x.status==="waiting"&&x.ask?el("p",{class:"sub"},x.ask):(x.note?el("p",{class:"sub"},x.note):null),
+      stagesEl(x.status),
+      acts.length?el("div",{class:"row"},...acts):null);
+  }));
+}
+function renderProjects(){
+  $("#projects").replaceChildren(...PROJECTS.map(p=>el("div",{class:"card proj"},el("h3",{},p.full),
+    el("div",{class:"row"},el("a",{class:"btn small primary",href:p.url,target:"_blank",rel:"noopener"},"פתח את הפרויקט"),p.board?el("a",{class:"btn small",href:p.board,target:"_blank",rel:"noopener"},"הלוח"):null))));
+}
+function renderHead(){
+  const m=$("#mode");
+  m.textContent=S.mode==="live"?"מחובר":S.mode==="loading"?"טוען":"לא מחובר";
+  m.className="mode"+(S.mode==="live"?" live":S.mode==="failed"?" bad":"");
+  const b=[];
+  if(S.mode==="failed")b.push(el("div",{class:"warn"},"העמוד לא הצליח להתחבר לנתונים. אם אתה לא מחובר לחשבון קלוד בדפדפן הזה, היכנס ונסה שוב."));
+  const up=S.status&&S.status.updated_at,stale=up&&Date.now()-new Date(up).getTime()>3*36e5&&syncHours();
+  const stuckNew=S.inbox.some(x=>(x.status==="new"||x.status==="routing")&&Date.now()-new Date(x.at).getTime()>90*6e4&&syncHours());
+  if(stale||stuckNew)b.push(el("div",{class:"warn"},`הסנכרון לא רץ כמו שצריך (עדכון אחרון ${up?ago(up):"לא ידוע"}). קלוד יבדוק את זה בפעם הבאה שתכתוב לו.`));
+  $("#banner").replaceChildren(...b);
+  $("#foot").textContent=up?`תמונת המצב עודכנה ${ago(up)}. הבדיקה הבאה: ${nextSync()}.`:`הבדיקה הבאה: ${nextSync()}.`;
+}
+function render(){renderHead();renderCompose();renderLists();renderIdeas();renderProjects()}
+
+function newId(){const d=new Date(),p=n=>String(n).padStart(2,"0");return `${d.getUTCFullYear()}${p(d.getUTCMonth()+1)}${p(d.getUTCDate())}${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}-${Math.random().toString(36).slice(2,6)}`}
+async function send(){
+  const ta=$("#text"),t=ta.value.trim();
+  if(!t){toast("כתוב קודם מה הרעיון.");ta.focus();return}
+  if(!S.db||S.busy)return;
+  S.busy=true;renderCompose();
+  try{
+    await S.db.doc("inbox/"+newId()).set({text:t,project:S.proj,status:"new",kind:"idea",at:new Date().toISOString()});
+    ta.value="";store("itayos.text","");
+    toast(`נשמר. הוא יגיע לפרויקט ב־${nextSync()} ויתחיל לזוז.`);
+  }catch(e){toast("השמירה נכשלה. הטקסט נשאר בתיבה, נסה שוב.")}
+  S.busy=false;renderCompose();
+}
+async function setProject(x,slug){try{await S.db.doc("inbox/"+x.id).update({project:slug,status:"new",note:"",updated_at:new Date().toISOString()});toast(`עובר ל${projOf(slug).name} בבדיקה הקרובה (${nextSync()}).`)}catch(e){toast("לא הצלחתי לשמור. נסה שוב.")}}
+async function del(x){try{await S.db.doc("inbox/"+x.id).delete();toast("נמחק.")}catch(e){toast("המחיקה נכשלה.")}}
+
+$("#send").addEventListener("click",send);
+$("#text").value=store("itayos.text")||"";
+$("#text").addEventListener("input",e=>store("itayos.text",e.target.value));
+setInterval(()=>{renderHead();renderCompose()},60000);
+
+(async()=>{
+  render();
+  const timer=setTimeout(()=>{if(S.mode!=="live"){S.mode="failed";render()}},10000);
+  let db=null;try{db=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){}
+  if(!db){clearTimeout(timer);S.mode="failed";render();return}
+  S.db=db;
+  db.collection("inbox").onSnapshot(snap=>{
+    clearTimeout(timer);S.mode="live";
+    S.inbox=snap.docs.filter(d=>d.exists).map(d=>Object.assign({id:d.id},d.data()))
+      .filter(x=>x.status!=="done"||Date.now()-new Date(x.updated_at||x.at).getTime()<14*864e5)
+      .sort((a,b)=>String(b.at).localeCompare(String(a.at)));
+    render();
+  },()=>{clearTimeout(timer);S.mode="failed";render()});
+  db.collection("status").onSnapshot(snap=>{const d=snap.docs.find(x=>x.exists&&x.id==="now");S.status=d?d.data():null;render()},()=>{});
+})();
+</script>
