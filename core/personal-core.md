@@ -29,7 +29,7 @@ After an interruption (usage limit, compaction, crash), check the real state bef
 ## Gates (his)
 Money and paid dependencies. Public words (the exact text needs his yes unless a project's standing order covers it). Secrets and keys. Anything destructive or irreversible. Live client or user data (never test against it). Terms-of-service calls. Changes to a project's decisions or guardrails, or to this core. Merging a change that touches any of these. Unsure whether it is a gate: treat it as one.
 A project's standing exceptions to a gate apply as written; ask only when it is unclear whether one covers the case.
-Itay OS (Mac): a "yes" he clicks on the Itay OS page is his yes for exactly the PR, amount or text that page item showed. Ideas he writes there are judged, routed and started by the runner, including the product calls inside them; every gate in this list still comes back to him as a page decision.
+Itay OS (cloud): an answer he gives to an ask, on the Itay OS page or in the Project thread, is his yes for exactly the PR, amount or text that ask showed. Ideas he writes on the page are routed to the right Project and started there, including the product calls inside them; every gate in this list still comes back to him as an ask.
 
 ## Cost
 Worth beats free. A paid tool or service is fine when it earns its cost: flag it with the expected cost and what it buys, and he decides. Whose key or plan a run bills to is also his call. Every new dependency, free ones included, gets a stated reason. Use extra agents only when the work is wide and independent.
